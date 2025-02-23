@@ -4,9 +4,7 @@ import com.aremi.springclustersimservice.service.ExecutionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -16,9 +14,14 @@ public class ExecutionController {
 
     private final ExecutionService service;
 
+    /**
+     * Metodo generico per bloccare il server per qualche secondo
+     * @param authorization
+     * @return
+     */
     @GetMapping("/exec")
-    public ResponseEntity<String> exec() {
-        log.info("exec:: started");
+    public ResponseEntity<String> exec(@RequestHeader(value = "Authorization", required = false) String authorization) {
+        log.info("exec:: started with params: {}", authorization);
         return service.exec();
     }
 }

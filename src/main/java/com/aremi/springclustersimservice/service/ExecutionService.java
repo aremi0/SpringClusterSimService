@@ -14,6 +14,10 @@ import java.util.stream.IntStream;
 @Service
 public class ExecutionService extends ServiceUtil {
 
+    /**
+     * Metodo che crea 10 thread ed aspetta la loro conclusione prima di ritornare
+     * @return
+     */
     public ResponseEntity<String> exec() {
         log.info("exec:: started");
 
