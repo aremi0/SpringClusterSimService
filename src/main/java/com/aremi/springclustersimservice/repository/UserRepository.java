@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     /**
      * Ritorna la password hashata (BCrypt) da una ricerca dello username
      * @param username Parametro di ricerca in tabella
-     * @return Password hashata dell'utente
+     * @return Password hashata dell'utente o null
      */
     @Query("SELECT u.hashedPassword FROM UserEntity u WHERE u.username = :username")
     String findHashedPasswordByUsername(@Param("username") String username);

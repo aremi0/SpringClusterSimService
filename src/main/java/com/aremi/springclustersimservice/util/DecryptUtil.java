@@ -12,7 +12,13 @@ public class DecryptUtil {
     private static final String ALGORITHM = "AES/ECB/PKCS5Padding";
     private static final String SECRET_KEY = "Esu7XyiFiMy/hqGRRPL+ZXAf";
 
-    public static String encrypt(String data) throws Exception {
+    /**
+     * Cripta una stringa con Algoritmo AES-256 (con padding) e ritorna stringa in Base64
+     * @param data Dato da cifrare
+     * @return Stringa in Base64 cifrata
+     * @throws Throwable Eccezioni di cifratura
+     */
+    public static String encrypt(String data) throws Throwable {
         Cipher cipher = Cipher.getInstance(ALGORITHM);
 
         // Genera una chiave segreta
@@ -25,6 +31,12 @@ public class DecryptUtil {
         return Base64.getEncoder().encodeToString(encryptedData);
     }
 
+    /**
+     * Decripta una stringa in Base64 cifrata con Algoritmo AES-256 (con padding)
+     * @param encryptedData Dato in Base64 cifrato.
+     * @return Stringa decriptata
+     * @throws Throwable Eccezioni di cifratura
+     */
     public static String decrypt(String encryptedData) throws Throwable {
         SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
 
@@ -35,14 +47,24 @@ public class DecryptUtil {
         return new String(original);
     }
 
+    /**
+     * Hasha una password in chiaro per salvataggio in DB, usa algoritmo di hashing BCrypt con sale
+     * @param password Dato da cifrare
+     * @return Hash risultante dalla cifratura
+     */
     public static String hashPassword(String password) {
         // Genera un salt e hash della password (salt: valore casuale aggiunto alla password)
         String salt = BCrypt.gensalt();
         return BCrypt.hashpw(password, salt);
     }
 
+    /**
+     * Metodo che verifica se una determinata password (in chiaro) corrisponde a quella hashata salvata in database
+     * @param password Password in chiaro da verificare
+     * @param hashedPassword Password salvata in database, associata all'utenza
+     * @return
+     */
     public static boolean checkPassword(String password, String hashedPassword) {
-        // Verifica se la password corrisponde all'hash
         return BCrypt.checkpw(password, hashedPassword);
     }
 

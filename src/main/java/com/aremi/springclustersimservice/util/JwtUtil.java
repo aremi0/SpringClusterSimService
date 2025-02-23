@@ -9,6 +9,11 @@ public class JwtUtil {
     private static final String SECRET = "secret";
     private static final long EXPIRATION = 86400000;
 
+    /**
+     * Genera un token a partire da un subject (in chiaro)
+     * @param subject Username da registrare come claim nel token
+     * @return Stringa del token appena generato
+     */
     public static String generateToken(String subject) {
         return JWT.create()
                 .withSubject(subject)
