@@ -4,6 +4,7 @@ import com.aremi.springclustersimservice.model.UserEntity;
 import com.aremi.springclustersimservice.dto.LoginRequestDTO;
 import com.aremi.springclustersimservice.repository.UserRepository;
 import com.aremi.springclustersimservice.util.DecryptUtil;
+import com.aremi.springclustersimservice.util.JwtInternalMap;
 import com.aremi.springclustersimservice.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +85,8 @@ public class UserService {
 
         if(isPasswordCorrect) {
             log.info("logUser:: [SUCCESS] user logged in successfully");
-            String token = JwtUtil.generateToken(decryptedUsername);
+            var token = JwtUtil.generateToken(decryptedUsername);
+            JwtInternalMap.addOrUpdateValue(decryptedUsername, token);
             log.info("logUser:: token created successfully");
             return ResponseEntity.ok(token);
         } else {
