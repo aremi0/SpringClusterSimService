@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 
 @Slf4j
 @Service
-public class ExecutionExecution extends ExecutionUtil {
+public class ExecutionService extends ExecutionUtil {
     @Value("${app.execution.thread.poolSize}")
     private int THREAD_POOL_SIZE;
     private ExecutorService executor;

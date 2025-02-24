@@ -1,6 +1,6 @@
 package com.aremi.springclustersimservice.controller;
 
-import com.aremi.springclustersimservice.service.ExecutionExecution;
+import com.aremi.springclustersimservice.service.ExecutionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class ExecutionController {
 
-    private final ExecutionExecution service;
+    private final ExecutionService service;
 
     /**
      * Metodo generico per bloccare il server per qualche secondo
