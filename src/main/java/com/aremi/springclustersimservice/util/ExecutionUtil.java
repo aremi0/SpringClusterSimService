@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.concurrent.*;
 
 @Slf4j
-public class ExecutionUtil {
+public class ExecutionUtil extends ServicesUtil {
     @Value("${app.execution.thread.maxWaitTimeSec}")
     private long UPPER_BOUND_THREAD_WAITING_TIME;
 

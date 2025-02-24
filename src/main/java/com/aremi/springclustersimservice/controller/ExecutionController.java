@@ -20,8 +20,8 @@ public class ExecutionController {
      * @return
      */
     @GetMapping("/exec")
-    public ResponseEntity<String> exec(@RequestHeader(value = "Authorization", required = false) String authorization) {
+    public ResponseEntity<String> exec(@RequestHeader(value = "Authorization") String authorization) {
         log.info("exec:: started with params: {}", authorization);
-        return service.startExec();
+        return service.startExec(authorization);
     }
 }

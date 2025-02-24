@@ -4,6 +4,7 @@ import com.aremi.springclustersimservice.util.ExecutionUtil;
 import com.aremi.springclustersimservice.util.TaskResult;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,21 @@ public class ExecutionExecution extends ExecutionUtil {
      * Metodo che crea 10 thread ed aspetta la loro conclusione prima di ritornare
      * @return
      */
-    public ResponseEntity<String> startExec() {
+    public ResponseEntity<String> startExec(String authorization) {
         log.info("startExec:: started");
+        try {
+            var token = this.extractTokenFromAuthorization(authorization);
+            if(!this.checkTokenValidity(token)) {
+                log.error("startExec:: [ERROR] Invalid token");
+                return ResponseEntity.badRequest().body("Invalid token");
+            } else {
+                log.error("startExec:: [SUCCESS] request authorized!");
+            }
+        } catch (BadRequestException e) {
+            log.error("startExec:: [ERROR] bad request with authorization: {}", authorization);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
 
         // Uso i thread della pool per creare n TASK e catchare l'exception in caso di fallimento di ciascuno di essi
         List<CompletableFuture<TaskResult>> futures = IntStream.range(0, this.THREAD_POOL_SIZE)

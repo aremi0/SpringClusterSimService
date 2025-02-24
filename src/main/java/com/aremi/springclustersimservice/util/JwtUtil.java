@@ -21,4 +21,13 @@ public class JwtUtil {
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION))
                 .sign(Algorithm.HMAC256(SECRET));
     }
+
+    /**
+     * Estrae il subject (username) dal Token
+     * @param token
+     * @return
+     */
+    public static String getSubject(String token) {
+        return JWT.decode(token).getSubject();
+    }
 }
