@@ -43,7 +43,8 @@ I dati vengono salvati a DB nel seguente modo:
 ---
 
 **GET** http://localhost:8080/api/documents/first-pages/{userId}
-
+#### Note
+Ottiene le prime pagine del documento associato all'utente cercandole prima in cache e nel caso di cache-miss sul disco.
 
 #### Note
 Username e Password devono essere inviati verso il servizio già cifrati con la stessa chiave usata dallo stesso.
