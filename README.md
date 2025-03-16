@@ -4,9 +4,9 @@ Architettura software a microservizio a scopo didattica.
 ## Tecnologie utilizzate:
 - **Hibernate**, **JPA**, **SQ**L: Registrazione e login degli utenti.
 - **JWT**, **AES Encryption**, **BCrypt Hashing**: Cifratura dei dati sensibili degli utenti e gestione della sessione con JWT.
-- **Docker**, **Spring Cloud**, **Spring Eureka**: Distribuzione in subnet docket con Load Balancing del carico tramite Spring Cloud e Discovery dinamico dei nodi tramite Eureka
+- **Docker**, **Spring Cloud**, **Spring Eureka**: Distribuzione in subnet docker con Load Balancing del carico tramite Spring Cloud e Discovery dinamico dei nodi tramite Eureka.
 - **WebClient**, **RabbitMQ**: WebClient per la comunicazione bloccante tra i servizi dell'architettura, RabbitMQ per la comunicazione asincrona.
-- **Spring Cache**, **Redis, AOP**: Implementazione di un layer di cache per migliorare lettura di documenti pesanti con integrazione della Aspect Oriented Programming per tenere traccia di cache-hit e cache-miss.
+- **Spring Cache**, **Redis, AOP**: Implementazione di un layer di cache per migliorare lettura di documenti pesanti con integrazione della Aspect Oriented Programming per tenere traccia di eventuali cache-miss.
 
 ## Flusso di esecuzione
 Client -> RequestHandlerProxy -> Cluster di microservizi {AuthenticationMicroservice, DocumentLoaderMicroservice, ...}  

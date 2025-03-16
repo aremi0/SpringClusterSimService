@@ -24,7 +24,7 @@ public class DocumentCacheService {
 
     @Value("${documents.path}")
     private String documentsPath;
-    private final short PARAGRAPH_TO_READ = 10;
+    private final short PARAGRAPH_TO_READ = 50;
 
     /**
      * Il metodo cerca prima nella cache esistente se c'è già un valore associato alla chiave userId nella cache

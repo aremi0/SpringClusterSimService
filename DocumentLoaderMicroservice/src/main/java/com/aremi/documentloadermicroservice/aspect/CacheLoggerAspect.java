@@ -23,7 +23,9 @@ public class CacheLoggerAspect {
 
     /**
      * Intercetta tutti i metodi annotati con la notazione specificata e che accettano l'argomento "userId", dopodichè
-     * ottiene la cache "documents" usata dal servizio di cui si viene verificare il cache-hit o cache-miss
+     * ottiene la cache "documents" usata dal servizio di cui si viene verificare il cache-miss
+     *
+     * Tramite la AOP non è possibile intercettare le Cache-HIT della @Cacheable :(
      *
      * @param userId
      * @param result
@@ -32,9 +34,7 @@ public class CacheLoggerAspect {
     public void firstPagesCacheState(Long userId, Object result) {
         Cache cache = cacheManager.getCache("documents");
 
-        if (!Objects.isNull(cache) && !Objects.isNull(cache.get(userId))) {
-            log.info("firstPagesCacheState:: [Cache HIT]");
-        } else {
+        if (Objects.isNull(cache) || Objects.isNull(cache.get(userId))) {
             log.info("firstPagesCacheState:: [Cache MISS]");
         }
     }
