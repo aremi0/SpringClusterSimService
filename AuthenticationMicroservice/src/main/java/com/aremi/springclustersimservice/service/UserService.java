@@ -20,6 +20,7 @@ import java.util.Objects;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final MessageProducer messageProducer;
 
     /**
      * Salva il nuovo utente sul DB
@@ -88,6 +89,9 @@ public class UserService {
             var token = JwtUtil.generateToken(decryptedUsername);
             JwtInternalMap.addOrUpdateValue(decryptedUsername, token);
             log.info("logUser:: token created successfully");
+
+            var userId = userRepository.getUserIdByUsername(decryptedUsername);
+            messageProducer.sendSuccessfulAuthenticationMessage(userId); // Mando messaggio di "successfulAuthentication" verso il DocumentLoaderMicroservice
             return ResponseEntity.ok(token);
         } else {
             log.warn("logUser:: [WARNING] password verification failed");

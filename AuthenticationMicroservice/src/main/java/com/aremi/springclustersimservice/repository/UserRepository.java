@@ -18,4 +18,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     String findHashedPasswordByUsername(@Param("username") String username);
 
     boolean existsByUsername(String username);
+    Long getUserIdByUsername(String username);
 }

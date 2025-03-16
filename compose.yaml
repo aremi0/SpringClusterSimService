@@ -38,6 +38,17 @@ services:
     networks:
       - clustersim
 
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672" # Porta per AMQP
+      - "15672:15672" # Porta per l'interfaccia web di RabbitMQ
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - clustersim
+
   requestHandlerProxy:
     image: eclipse-temurin:21-jre # Usa una base con Java 21
     volumes:
