@@ -39,6 +39,12 @@ I dati vengono salvati a DB nel seguente modo:
   "password": "3vC5sJjF5DyGZIrR5HEykw=="
   }
 ```
+
+---
+
+**GET** http://localhost:8080/api/documents/first-pages/{userId}
+
+
 #### Note
 Username e Password devono essere inviati verso il servizio già cifrati con la stessa chiave usata dallo stesso.
 Nel microservizio "AuthentiocationMicroservice", package "util", classe "Decryptutil" è presente un main in cui si può cifrare qualsiasi stringa.  

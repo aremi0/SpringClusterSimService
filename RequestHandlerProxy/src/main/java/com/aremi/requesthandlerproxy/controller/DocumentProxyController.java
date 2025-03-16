@@ -24,7 +24,7 @@ public class DocumentProxyController {
      * @param userId
      * @return
      */
-    @GetMapping("/first-page/{userId}")
+    @GetMapping("/first-pages/{userId}")
     public ResponseEntity<String> getFirstPage(@PathVariable Long userId) {
         log.info("getFirstPage:: started with params: {}", userId);
 
@@ -32,7 +32,7 @@ public class DocumentProxyController {
             // Crea una richiesta con WebClient
             String response = webClientBuilder.build()
                     .get()
-                    .uri("http://DocumentLoaderMicroservice/first-page/{userId}", userId)
+                    .uri("http://DocumentLoaderMicroservice/first-pages/{userId}", userId)
                     .retrieve()
                     .bodyToMono(String.class)
                     .block(); // Bloccante: se hai bisogno di una risposta immediata
