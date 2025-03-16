@@ -5,6 +5,10 @@ import org.apache.coyote.BadRequestException;
 
 import java.util.Objects;
 
+/**
+ * Classe di utilità per la classe che la estende
+ */
+
 @Slf4j
 public class ServicesUtil {
 

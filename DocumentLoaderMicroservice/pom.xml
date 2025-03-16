@@ -46,6 +46,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
+		<!-- cache distribuita (condivisa) | inserita AOP (Aspect Oriented Programming) per intercettare cache-hit e cache-miss-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+
 
 		<!-- Apache POI  - lettura documenti Microsoft Word-->
 		<dependency>

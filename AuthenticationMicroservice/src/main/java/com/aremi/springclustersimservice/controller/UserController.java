@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Classe che gestisce gli Endpoint legati all'autenticazione
+ */
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -17,7 +21,7 @@ public class UserController {
     private final UserService service;
 
     /**
-     * Metodo per la registrazione in database di un nuovo utente
+     * Endpoint per la registrazione in database di un nuovo utente
      * @param registrationDTO DTO con dati cifrati con AES
      * @return Ritorna una stringa di successo o fallimento
      */
@@ -28,7 +32,7 @@ public class UserController {
     }
 
     /**
-     * Metodo per la login di un utente
+     * Endpoint per la login di un utente
      * @param loginDTO DTO con dati cifrati con AES
      * @return Ritorna un token JWT se l'autenticazione avviene con successo
      */

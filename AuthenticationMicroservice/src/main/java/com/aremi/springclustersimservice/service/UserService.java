@@ -14,6 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+/**
+ * Classe che gestisce la logica di business legata all'autenticazione
+ */
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -23,7 +27,11 @@ public class UserService {
     private final MessageProducer messageProducer;
 
     /**
-     * Salva il nuovo utente sul DB
+     * Salva il nuovo utente sul DB. Riceve Username e Password cifrati con AES, li decifra e salva i dati a DB nel seguente
+     * modo:
+     *      username: in chiaro
+     *      password: viene decifrata da AES in chiaro e poi da in chiaro viene hashata on sale tramite BCrypt, poi salvata hashata.
+     *
      * @param registrationDTO DTO con dati cifrati con AES
      * @return Ritorna una stringa di successo o fallimento
      */
@@ -85,12 +93,11 @@ public class UserService {
         var isPasswordCorrect = DecryptUtil.checkPassword(decryptedPassword, dbHashedPwd);
 
         if(isPasswordCorrect) {
-            log.info("logUser:: [SUCCESS] user logged in successfully");
+            log.info("logUser:: [SUCCESS] user logged in successfully! Sending message to rabbitMQ...");
             var token = JwtUtil.generateToken(decryptedUsername);
             JwtInternalMap.addOrUpdateValue(decryptedUsername, token);
             log.info("logUser:: token created successfully");
-
-            var userId = userRepository.getUserIdByUsername(decryptedUsername);
+            var userId = userRepository.findIdByUsername(decryptedUsername);
             messageProducer.sendSuccessfulAuthenticationMessage(userId); // Mando messaggio di "successfulAuthentication" verso il DocumentLoaderMicroservice
             return ResponseEntity.ok(token);
         } else {

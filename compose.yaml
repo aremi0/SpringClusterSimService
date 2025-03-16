@@ -38,6 +38,14 @@ services:
     networks:
       - clustersim
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - clustersim
+
   rabbitmq:
     image: rabbitmq:management
     ports:
@@ -66,6 +74,22 @@ services:
     image: eclipse-temurin:21-jre # Usa una base con Java 21
     volumes:
       - ./AuthenticationMicroservice/target/AuthenticationMicroservice-0.0.1-SNAPSHOT.war:/app.war
+    working_dir: /app
+    command: ["java", "-jar", "/app.war"]
+    networks:
+      - clustersim
+    depends_on:
+      - eurekaServer
+    deploy:
+      replicas: 2  # Numero di repliche
+      restart_policy:
+        condition: on-failure
+
+  documentLoaderMicroservice:
+    image: eclipse-temurin:21-jre # Usa una base con Java 21
+    volumes:
+      - ./DocumentLoaderMicroservice/target/DocumentLoaderMicroservice-0.0.1-SNAPSHOT.war:/app.war
+      - ./DocumentLoaderMicroservice/documents:/app/documents # Mappa la cartella locale ./documents in /app/documents nel container
     working_dir: /app
     command: ["java", "-jar", "/app.war"]
     networks:

@@ -5,6 +5,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 
 import java.util.Date;
 
+/**
+ * Classe di utilità per la gestione dei JWT
+ */
+
 public class JwtUtil {
     private static final String SECRET = "secret";
     private static final long EXPIRATION = 86400000;

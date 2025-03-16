@@ -7,6 +7,10 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
+/**
+ * Classe di utilità per la Crittografia dei dati
+ */
+
 @Slf4j
 public class DecryptUtil {
     private static final String ALGORITHM = "AES/ECB/PKCS5Padding";
