@@ -8,6 +8,12 @@ Architettura software a microservizio a scopo didattica.
 - **WebClient**, **RabbitMQ**: WebClient per la comunicazione bloccante tra i servizi dell'architettura, RabbitMQ per la comunicazione asincrona.
 - **Spring Cache**, **Redis, AOP**: Implementazione di un layer di cache per migliorare lettura di documenti pesanti con integrazione della Aspect Oriented Programming per tenere traccia di eventuali cache-miss.
 
+## TODO in ordine decrescente di priority
+1. Integrare una logica di SESSION_ID che identifica la coppia utente/sessione per ogni microservizio. Provare a sfruttare AOP. Integrare nei log.
+2. Sfruttare maggiormente l'AOP in generale.
+3. Integrare KAFKA (con web-gui "provectus/kafka-ui") per centralizzare i log dei microservizi in topic volatili di SESSION_ID.
+4. Modificare la logica di cache-MISS (attualmente AOP) potenziandola per intercettare anche i cache-HIT.
+
 ## Flusso di esecuzione
 Client -> RequestHandlerProxy -> Cluster di microservizi {AuthenticationMicroservice, DocumentLoaderMicroservice, ...}  
 
