@@ -27,7 +27,6 @@ public class UserController {
      */
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody LoginRequestDTO registrationDTO) {
-        log.info("register:: started with params: {}", registrationDTO);
         return service.registerNewUser(registrationDTO);
     }
 
@@ -38,7 +37,6 @@ public class UserController {
      */
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequestDTO loginDTO) {
-        log.info("login:: started with params: {}", loginDTO);
-        return service.logUser(loginDTO);
+        return service.loginUser(loginDTO);
     }
 }
