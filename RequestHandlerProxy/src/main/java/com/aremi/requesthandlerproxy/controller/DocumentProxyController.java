@@ -2,6 +2,7 @@ package com.aremi.requesthandlerproxy.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,6 +20,30 @@ public class DocumentProxyController {
     private final WebClient.Builder webClientBuilder;
 
     /**
+     * Endpoint che intercetta le richieste del container Prometheus per le metriche del cluster DocumentLoaderMicroservice
+     * e le instrada verso il cluster
+     *
+     * @return
+     */
+    @GetMapping("/prometheus")
+    public ResponseEntity<String> prometheusMetrics() {
+        log.info("prometheusMetrics:: started");
+
+        // Usa WebClient per inoltrare la richiesta all'endpoint del microservizio di autenticazione
+        String response = webClientBuilder.build()
+                .get()
+                .uri("http://DocumentLoaderMicroservice/actuator/prometheus")
+                .retrieve()
+                .bodyToMono(String.class)
+                .block(); // Operazione bloccante
+
+        log.info("prometheusMetrics:: [SUCCESS] Risposta ricevuta dal microservizio. Forcing EOF...");
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(response + "\n# EOF");
+    }
+
+    /**
      * Endpoint che inoltra la richiesta verso il microservizio adibito più scarico
      *
      * @param userId
@@ -28,20 +53,13 @@ public class DocumentProxyController {
     public ResponseEntity<String> getFirstPage(@PathVariable Long userId) {
         log.info("getFirstPage:: started with params: {}", userId);
 
-        try {
             // Crea una richiesta con WebClient
-            String response = webClientBuilder.build()
+            return webClientBuilder.build()
                     .get()
                     .uri("http://DocumentLoaderMicroservice/first-pages/{userId}", userId)
                     .retrieve()
-                    .bodyToMono(String.class)
+                    .toEntity(String.class)
                     .block(); // Bloccante: se hai bisogno di una risposta immediata
 
-            log.info("getFirstPage:: [SUCCESS] Risposta ricevuta per userId: {}", userId);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("getFirstPage:: [ERROR] Errore durante la chiamata al microservizio per userId: {} | {}", userId, e.getMessage());
-            return ResponseEntity.status(500).body("Errore durante il recupero della prima pagina.");
-        }
     }
 }

@@ -1,0 +1,14 @@
+scrape_configs:
+  - job_name: 'authentication-metrics'
+    static_configs:
+      - targets: ['RequestHandlerProxy:8080']
+        labels:
+          microservice: "authentication"
+    metrics_path: /api/auth/prometheus
+
+  - job_name: 'document-loader-metrics'
+    static_configs:
+      - targets: ['RequestHandlerProxy:8080']
+        labels:
+          microservice: "document-loader"
+    metrics_path: /api/document/prometheus

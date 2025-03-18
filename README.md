@@ -62,6 +62,7 @@ Ottiene le prime pagine del documento associato all'utente cercandole prima in c
 ---
 
 ## Monitoraggio
+- Metriche Prometheus dei microservizi: http://localhost:9090
 - Dashboard di Eureka: http://localhost:8761
 - Health: http://localhost:<port>/actuator/health
 - RabbitMQ Managment: http://localhost:15672

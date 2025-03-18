@@ -57,6 +57,18 @@ services:
     networks:
       - clustersim
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml # Configurazione Prometheus
+    ports:
+      - "9090:9090" # Porta per accedere all'interfaccia di Prometheus
+    networks:
+      - clustersim
+    depends_on:
+      - requestHandlerProxy # Assicura che il proxy sia attivo prima di Prometheus
+
   requestHandlerProxy:
     image: eclipse-temurin:21-jre # Usa una base con Java 21
     volumes:
