@@ -30,7 +30,8 @@ public class CacheLoggerAspect {
      * @param userId
      * @param result
      */
-    @AfterReturning(value = "@annotation(org.springframework.cache.annotation.Cacheable) && args(userId)", returning = "result", argNames = "userId,result")
+    @AfterReturning(value = "@annotation(org.springframework.cache.annotation.Cacheable) &&" +
+            "args(userId)", returning = "result", argNames = "userId,result")
     public void firstPagesCacheState(Long userId, Object result) {
         Cache cache = cacheManager.getCache("documents");
 
