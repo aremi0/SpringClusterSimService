@@ -9,6 +9,7 @@ Architettura software a microservizio a scopo didattica.
 - **Spring Cache**, **Redis, AOP**: Implementazione di un layer di cache per migliorare lettura di documenti pesanti con integrazione della Aspect Oriented Programming per tenere traccia di eventuali cache-miss.
 
 ## TODO in ordine decrescente di priority
+0. Far aprire al ProxyRequestHandler una sessione da propagare agli altri servizi e tenerla viva tramite cookie (se fattibile).
 1. **50** Integrare una logica di SESSION_ID che identifica la coppia utente/sessione per ogni microservizio. Provare a sfruttare AOP. Integrare nei log.
 2. **30%** Sfruttare maggiormente l'AOP in generale.
 3. **45%** Integrare le Metriche tramite AOP.
