@@ -1,5 +1,6 @@
 package com.aremi.documentloadermicroservice.controller;
 
+import com.aremi.documentloadermicroservice.exception.ForcedFailureException;
 import com.aremi.documentloadermicroservice.service.DocumentCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Random;
 
 /**
  * Controller che gestisce gli Endpoint legati alla consultazione dei documenti
@@ -27,13 +30,16 @@ public class DocumentController {
     @GetMapping("/first-pages/{userId}")
     public ResponseEntity<String> getFirstPages(@PathVariable Long userId) {
         log.info("getFirstPages:: Richiesta ricevuta per userId: {}", userId);
-        try {
-            String firstPageContent = documentCacheService.loadFirstPages(userId); // Recupera le prime pagine dalla cache o dal file
-            log.info("getFirstPages:: [SUCCESS] Prime pagine restituite per userId: {}", userId);
-            return ResponseEntity.ok(firstPageContent);
-        } catch (Exception e) {
-            log.error("getFirstPages:: [ERROR] Errore durante il recupero delle prime pagine per userId: {} | {}", userId, e.getMessage());
-            return ResponseEntity.status(500).body("Errore durante il recupero delle prime pagine del documento.");
+
+        // Logica per decidere se lanciare l'eccezione
+        Random random = new Random();
+        boolean shouldFail = random.nextDouble() < 0.6; // 60% di probabilità
+
+        if (shouldFail) {
+            log.error("getFirstPages:: [FORCED FAILURE] Simulata eccezione per userId: {}", userId);
+            throw new ForcedFailureException("Errore simulato per testing con probabilità del 60%");
         }
+
+        return ResponseEntity.ok(documentCacheService.loadFirstPages(userId)); // Recupera le prime pagine
     }
 }
