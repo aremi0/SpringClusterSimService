@@ -54,6 +54,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>com.aremi</groupId>
 			<artifactId>common-dto</artifactId>
 			<version>1.0.0</version>

@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 @Slf4j
 @RestControllerAdvice
-public class ProxyExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(WebClientResponseException.class)
     public ResponseEntity<String> handleWebClientResponseException(WebClientResponseException ex) {
@@ -23,8 +23,8 @@ public class ProxyExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
-        log.error("Errore generico nel proxy: {}", ex.getMessage());
+        log.error("[EXCEPTION HANDLER] RuntimeException catturata: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Errore durante l'elaborazione della richiesta.");
+                .body("Si è verificato un errore interno: " + ex.getMessage());
     }
 }

@@ -54,8 +54,6 @@ public class AuthenticationProxyController {
      */
     @PostMapping("/register")
     public ResponseEntity<String> registrationRequest(@RequestBody @Validated LoginRequestDTO registrationDTO) {
-        log.info("registrationRequest:: started with params: {}", registrationDTO);
-
         return webClientBuilder.build()
                 .post()
                 .uri("http://AuthenticationMicroservice/register")
@@ -74,8 +72,6 @@ public class AuthenticationProxyController {
      */
     @PostMapping("/login")
     public ResponseEntity<String> loginRequest(@RequestBody @Validated LoginRequestDTO loginRequestDTO) {
-        log.info("loginRequest:: started with params: {}", loginRequestDTO);
-
         return webClientBuilder.build()
                 .post()
                 .uri("http://AuthenticationMicroservice/login")
