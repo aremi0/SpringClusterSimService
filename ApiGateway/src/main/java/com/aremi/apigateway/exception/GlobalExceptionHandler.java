@@ -21,9 +21,9 @@ public class GlobalExceptionHandler {
                 .body(errorBody);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
-        log.error("[EXCEPTION HANDLER] RuntimeException catturata: {}", ex.getMessage());
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<String> handleRuntimeException(Throwable ex) {
+        log.error("[EXCEPTION HANDLER] Throwable catturata: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Si è verificato un errore interno: " + ex.getMessage());
     }
