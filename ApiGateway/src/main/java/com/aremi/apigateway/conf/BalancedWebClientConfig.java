@@ -3,7 +3,6 @@ package com.aremi.apigateway.conf;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -14,7 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class BalancedWebClientConfig {
     @Bean
     @LoadBalanced
-    public WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
+    public WebClient balancedWebClient() {
+        return WebClient.builder().build();
     }
 }

@@ -20,8 +20,8 @@ public class BeforeAspect {
      *
      * @param joinPoint
      */
-    @Before("execution(* com.aremi.requesthandlerproxy.controller.*.*(..)) &&" +
-            "!execution(* com.aremi.requesthandlerproxy.controller.*.prometheus*(..))")
+    @Before("execution(* com.aremi.apigateway.controller.*.*(..)) &&" +
+            "!execution(* com.aremi.apigateway.controller.*.prometheus*(..))")
     public void logMethodStart(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().toShortString();
         Object[] args = joinPoint.getArgs();

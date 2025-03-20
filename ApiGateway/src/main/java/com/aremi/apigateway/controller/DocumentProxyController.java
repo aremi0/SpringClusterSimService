@@ -1,6 +1,7 @@
 package com.aremi.apigateway.controller;
 
 import com.aremi.apigateway.annotation.Retryable;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -19,7 +20,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @RequestMapping("/api/documents")
 public class DocumentProxyController {
 
-    private final WebClient.Builder webClientBuilder;
+    private final WebClient balancedWebClient;
 
     /**
      * Endpoint che intercetta le richieste del container Prometheus per le metriche del cluster DocumentLoaderMicroservice
@@ -32,8 +33,7 @@ public class DocumentProxyController {
         log.info("prometheusMetrics:: started");
 
         // Usa WebClient per inoltrare la richiesta all'endpoint del microservizio di autenticazione
-        String response = webClientBuilder.build()
-                .get()
+        String response = balancedWebClient.get()
                 .uri("http://DocumentLoaderMicroservice/actuator/prometheus")
                 .retrieve()
                 .bodyToMono(String.class)
@@ -53,13 +53,14 @@ public class DocumentProxyController {
      */
     @GetMapping("/first-pages/{userId}")
     @Retryable(maxAttempts = 3, retryOnExceptions = {WebClientResponseException.class})
-    public ResponseEntity<String> getFirstPage(@PathVariable Long userId) {
-            return webClientBuilder.build()
-                    .get()
-                    .uri("http://DocumentLoaderMicroservice/first-pages/{userId}", userId)
-                    .retrieve()
-                    .toEntity(String.class)
-                    .block(); // Bloccante: se hai bisogno di una risposta immediata
-
+    public ResponseEntity<String> getFirstPage(@PathVariable Long userId,
+                                               HttpSession session) {
+        String sessionId = session.getId();
+        return balancedWebClient.get()
+                .uri("http://DocumentLoaderMicroservice/first-pages/{userId}", userId)
+                .header("Session-ID", sessionId)
+                .retrieve()
+                .toEntity(String.class)
+                .block(); // Bloccante: se hai bisogno di una risposta immediata
     }
 }

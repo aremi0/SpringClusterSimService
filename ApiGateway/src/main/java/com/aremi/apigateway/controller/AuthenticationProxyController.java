@@ -1,6 +1,7 @@
 package com.aremi.apigateway.controller;
 
 import com.aremi.authentication.LoginRequestDTO;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -19,7 +20,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequestMapping("/api/auth")
 public class AuthenticationProxyController {
 
-    private final WebClient.Builder webClientBuilder;
+    private final WebClient balancedWebClient;
 
     /**
      * Endpoint che intercetta le richieste del container Prometheus per le metriche del cluster AuthenticationMicroservice
@@ -32,8 +33,7 @@ public class AuthenticationProxyController {
         log.info("prometheusMetrics:: started");
 
         // Usa WebClient per inoltrare la richiesta all'endpoint del microservizio di autenticazione
-        String response = webClientBuilder.build()
-                .get()
+        String response = balancedWebClient.get()
                 .uri("http://AuthenticationMicroservice/actuator/prometheus")
                 .retrieve()
                 .bodyToMono(String.class)
@@ -53,10 +53,12 @@ public class AuthenticationProxyController {
      * @return
      */
     @PostMapping("/register")
-    public ResponseEntity<String> registrationRequest(@RequestBody @Validated LoginRequestDTO registrationDTO) {
-        return webClientBuilder.build()
-                .post()
+    public ResponseEntity<String> registrationRequest(@RequestBody @Validated LoginRequestDTO registrationDTO,
+                                                      HttpSession session) {
+        String sessionId = session.getId();
+        return balancedWebClient.post()
                 .uri("http://AuthenticationMicroservice/register")
+                .header("Session-ID", sessionId)
                 .bodyValue(registrationDTO)
                 .retrieve()
                 .toEntity(String.class)
@@ -71,10 +73,12 @@ public class AuthenticationProxyController {
      * @return
      */
     @PostMapping("/login")
-    public ResponseEntity<String> loginRequest(@RequestBody @Validated LoginRequestDTO loginRequestDTO) {
-        return webClientBuilder.build()
-                .post()
+    public ResponseEntity<String> loginRequest(@RequestBody @Validated LoginRequestDTO loginRequestDTO,
+                                               HttpSession session) {
+        String sessionId = session.getId();
+        return balancedWebClient.post()
                 .uri("http://AuthenticationMicroservice/login")
+                .header("Session-ID", sessionId)
                 .bodyValue(loginRequestDTO)
                 .retrieve()
                 .toEntity(String.class)
