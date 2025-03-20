@@ -5,6 +5,8 @@ import lombok.*;
 
 @Getter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginRequestDTO {
     @NotBlank
     private String username;

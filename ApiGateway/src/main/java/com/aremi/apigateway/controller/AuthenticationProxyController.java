@@ -1,4 +1,4 @@
-package com.aremi.requesthandlerproxy.controller;
+package com.aremi.apigateway.controller;
 
 import com.aremi.authentication.LoginRequestDTO;
 import lombok.RequiredArgsConstructor;

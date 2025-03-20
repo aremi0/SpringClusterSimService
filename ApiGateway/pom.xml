@@ -9,11 +9,11 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.aremi</groupId>
-	<artifactId>RequestHandlerProxy</artifactId>
+	<artifactId>ApiGateway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>RequestHandlerProxy</name>
-	<description>SpringClusterSimService RequestHandlerProxy</description>
+	<name>ApiGateway</name>
+	<description>SpringClusterSimService ApiGateway</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -51,6 +51,12 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		<!-- Aggiunge automaticamente traceId al MDC di Slf4j -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-tracing-bridge-brave</artifactId>
+			<version>1.4.3</version>
 		</dependency>
 
 		<dependency>

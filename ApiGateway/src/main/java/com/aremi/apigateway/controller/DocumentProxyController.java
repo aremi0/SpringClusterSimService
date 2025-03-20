@@ -1,11 +1,13 @@
-package com.aremi.requesthandlerproxy.controller;
+package com.aremi.apigateway.controller;
 
+import com.aremi.apigateway.annotation.Retryable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * Classe PROXY che gestisce gli Endpoint legati alla consultazione dei documenti.
@@ -50,6 +52,7 @@ public class DocumentProxyController {
      * @return
      */
     @GetMapping("/first-pages/{userId}")
+    @Retryable(maxAttempts = 3, retryOnExceptions = {WebClientResponseException.class})
     public ResponseEntity<String> getFirstPage(@PathVariable Long userId) {
             return webClientBuilder.build()
                     .get()

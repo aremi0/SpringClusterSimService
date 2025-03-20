@@ -1,5 +1,4 @@
 services:
-
   database:
     image: mysql:latest
     container_name: database
@@ -49,8 +48,8 @@ services:
   rabbitmq:
     image: rabbitmq:management
     ports:
-      - "5672:5672" # Porta per AMQP
-      - "15672:15672" # Porta per l'interfaccia web di RabbitMQ
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -61,29 +60,44 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml # Configurazione Prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "9090:9090" # Porta per accedere all'interfaccia di Prometheus
+      - "9090:9090"
     networks:
       - clustersim
     depends_on:
-      - requestHandlerProxy # Assicura che il proxy sia attivo prima di Prometheus
+      - apiGateway
 
-  requestHandlerProxy:
-    image: eclipse-temurin:21-jre # Usa una base con Java 21
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - clustersim
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
     volumes:
-      - ./RequestHandlerProxy/target/RequestHandlerProxy-0.0.1-SNAPSHOT.war:/app.war
+      - grafana-data:/var/lib/grafana
+
+  apiGateway:
+    image: eclipse-temurin:21-jre
+    volumes:
+      - ./ApiGateway/target/ApiGateway-0.0.1-SNAPSHOT.war:/app.war
     working_dir: /app
     command: ["java", "-jar", "/app.war"]
     networks:
       - clustersim
     ports:
-      - "8080:8080" # Mappa la porta interna 8080 del container alla porta 8080 dell'host
+      - "8080:8080"
     depends_on:
       - eurekaServer
 
   authenticationMicroservice:
-    image: eclipse-temurin:21-jre # Usa una base con Java 21
+    image: eclipse-temurin:21-jre
     volumes:
       - ./AuthenticationMicroservice/target/AuthenticationMicroservice-0.0.1-SNAPSHOT.war:/app.war
     working_dir: /app
@@ -92,16 +106,17 @@ services:
       - clustersim
     depends_on:
       - eurekaServer
+      - database
     deploy:
-      replicas: 2  # Numero di repliche
+      replicas: 2
       restart_policy:
         condition: on-failure
 
   documentLoaderMicroservice:
-    image: eclipse-temurin:21-jre # Usa una base con Java 21
+    image: eclipse-temurin:21-jre
     volumes:
       - ./DocumentLoaderMicroservice/target/DocumentLoaderMicroservice-0.0.1-SNAPSHOT.war:/app.war
-      - ./DocumentLoaderMicroservice/documents:/app/documents # Mappa la cartella locale ./documents in /app/documents nel container
+      - ./DocumentLoaderMicroservice/documents:/app/documents
     working_dir: /app
     command: ["java", "-jar", "/app.war"]
     networks:
@@ -109,7 +124,7 @@ services:
     depends_on:
       - eurekaServer
     deploy:
-      replicas: 2  # Numero di repliche
+      replicas: 2
       restart_policy:
         condition: on-failure
 
@@ -117,10 +132,6 @@ networks:
   clustersim:
     name: clustersim
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.28.0.0/16
 
-# docker-compose up
-# oppure in modalità detatched per non bloccare il terminale
-# docker-compose up -d
+volumes:
+  grafana-data:

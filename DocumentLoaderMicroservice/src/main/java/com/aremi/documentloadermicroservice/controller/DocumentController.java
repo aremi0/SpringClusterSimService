@@ -33,11 +33,11 @@ public class DocumentController {
 
         // Logica per decidere se lanciare l'eccezione
         Random random = new Random();
-        boolean shouldFail = random.nextDouble() < 0.6; // 60% di probabilità
+        boolean shouldFail = random.nextDouble() < 0.75; // % di probabilità
 
         if (shouldFail) {
             log.error("getFirstPages:: [FORCED FAILURE] Simulata eccezione per userId: {}", userId);
-            throw new ForcedFailureException("Errore simulato per testing con probabilità del 60%");
+            throw new ForcedFailureException("Errore simulato per testing.");
         }
 
         return ResponseEntity.ok(documentCacheService.loadFirstPages(userId)); // Recupera le prime pagine

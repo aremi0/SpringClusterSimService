@@ -1,4 +1,4 @@
-package com.aremi.requesthandlerproxy.conf;
+package com.aremi.apigateway.conf;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

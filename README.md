@@ -9,18 +9,23 @@ Architettura software a microservizio a scopo didattica.
 - **Spring Cache**, **Redis, AOP**: Implementazione di un layer di cache per migliorare lettura di documenti pesanti con integrazione della Aspect Oriented Programming per tenere traccia di eventuali cache-miss.
 
 ## TODO in ordine decrescente di priority
-0. Far aprire al ProxyRequestHandler una sessione da propagare agli altri servizi e tenerla viva tramite cookie (se fattibile).
-1. **50** Integrare una logica di SESSION_ID che identifica la coppia utente/sessione per ogni microservizio. Provare a sfruttare AOP. Integrare nei log.
-2. **30%** Sfruttare maggiormente l'AOP in generale.
-3. **45%** Integrare le Metriche tramite AOP.
-4. Integrare KAFKA (con web-gui "provectus/kafka-ui") per centralizzare i log dei microservizi in topic volatili di SESSION_ID.
-5. Modificare la logica di cache-MISS (attualmente AOP) potenziandola per intercettare anche i cache-HIT.
+1. **30** Far aprire al ApiGateway una sessione da propagare agli altri tramite header X-Session servizi e tenerla viva tramite cookie (se fattibile).
+2. **50** Integrare una logica di SESSION_ID che identifica la coppia utente/sessione per ogni microservizio. Provare a sfruttare AOP. Integrare nei log.
+3. **30%** Sfruttare maggiormente l'AOP in generale.
+4. **45%** Integrare le Metriche tramite AOP.
+5. Integrare KAFKA (con web-gui "provectus/kafka-ui") per centralizzare i log dei microservizi in topic volatili di SESSION_ID.
+6. Modificare la logica di cache-MISS (attualmente AOP) potenziandola per intercettare anche i cache-HIT.
+
+### Completamento TODO
+1. **30%** Il ApiGateway stampa il traceId per processo (avviato alal ricezione della request) sui log. Posso usare questo traceId
+come "sessionId", propagandolo ai servizi come header X-Session. In alternativa posso proprio fargli aprire una sessione, ma dovrei
+prima integrare Spring Security (credo, da studiarla meglio).
 
 ## Flusso di esecuzione
-Client -> RequestHandlerProxy -> Cluster di microservizi {AuthenticationMicroservice, DocumentLoaderMicroservice, ...}  
+Client -> ApiGateway -> Cluster di microservizi {AuthenticationMicroservice, DocumentLoaderMicroservice, ...}  
 
 I client si interfacciano con un Proxy che, effettuati i dovuti controlli, indirizzerà il traffico verso il microservizio adibito più scarico.  
-Il RequestHandlerProxy sarà esposto su http://localhost:8080
+Il ApiGateway sarà esposto su http://localhost:8080
 
 ### API
 **POST** http://localhost:8080/api/auth/register con RequestBody JSON
@@ -64,6 +69,8 @@ Ottiene le prime pagine del documento associato all'utente cercandole prima in c
 ---
 
 ## Monitoraggio
+- Dashboard metriche Grafana: http://localhost:3000
+  - username:admin, pwd:admin
 - Metriche Prometheus dei microservizi: http://localhost:9090
 - Dashboard di Eureka: http://localhost:8761
 - Health: http://localhost:<port>/actuator/health
