@@ -1,94 +1,95 @@
 package com.aremi.apigateway.aspect;
 
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import com.aremi.apigateway.annotation.Retryable;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-
 /**
- * Classe AOP che centralizza le metriche Around
+ * Classe che implementa gli aspetti Around (AOP)
  */
 
 @Slf4j
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class AroundAspect {
-    private final HttpServletRequest request;
-
 
     /**
-     * Aspetto che centralizza i log {inizio, completato con successo, completato con Exception, durata} di tutti
-     * i metodi di tutti dei @Controller eccetto quelle delle metriche (includendo la sessionId della richiesta,
-     * ammesso che il FE crei la sessione)
+     * Aspetto per il logging della durata dei metodi specificati, comprese exception sollevate
      *
      * @param joinPoint
      * @return
      * @throws Throwable
      */
-    @Around("execution(* com.aremi.requesthandlerproxy.controller.*.*(..)) &&" +
-            "!execution(* com.aremi.requesthandlerproxy.controller.*.prometheus*(..))")
-    public Object controllerLogsAndMetrics(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("execution(* com.aremi.apigateway.controller.*.*(..)) &&" +
+            "!execution(* com.aremi.apigateway.controller.*.prometheus*(..))")
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
         String methodName = joinPoint.getSignature().toShortString();
-        String sessionId = Objects.isNull(request.getSession(false)) ? "N/A" : request.getSession(false).getId();
-
-        // Recupera i parametri del metodo
-        Object[] methodArgs = joinPoint.getArgs();
-        log.info("[{}] {} partito con parametri: {}", sessionId, methodName, methodArgs);
 
         try {
             Object result = joinPoint.proceed();
-            log.info("[{}] [SUCCESS] {}", sessionId, methodName);
+
+            long executionTime = System.currentTimeMillis() - startTime;
+            log.info("{} eseguito in {}ms.", methodName, executionTime);
+
             return result;
-        } catch (Throwable ex) {
-            log.error("{}] [ERROR] {}  {}: {}", sessionId, methodName, ex.getClass().getSimpleName(), ex.getMessage());
-            throw ex;
-        } finally {
-            long duration = System.currentTimeMillis() - startTime;
-            log.info("[{}] {} terminato in {}ms", sessionId, methodName, duration);
+        } catch (Throwable throwable) {
+            // Log in caso di errore
+            long executionTime = System.currentTimeMillis() - startTime;
+            log.error("[ERROR] {} errore durante l'esecuzione, tempo di esecuzione: {}ms.", methodName, executionTime);
+            throw throwable; // Rilancia l'eccezione
         }
     }
 
     /**
-     * Aspetto che centralizza una logica di retry a 3 tentativi, includendo dei log.
+     * Aspetto per applicazione della logica dei retry per l'annotazione @Retryable
+     *
      * @param joinPoint
+     * @param retryable
      * @return
      * @throws Throwable
      */
-    @Around("execution(* com.aremi.requesthandlerproxy.controller.*.get*(..))")
-    public Object handleRetryAndLogs(ProceedingJoinPoint joinPoint) throws Throwable {
-        long startTime = System.currentTimeMillis();
-        String methodName = joinPoint.getSignature().toShortString();
-        String sessionId = Objects.isNull(request.getSession(false)) ? "N/A" : request.getSession(false).getId();
+    @Around("@annotation(retryable)")
+    public Object handleRetry(ProceedingJoinPoint joinPoint, Retryable retryable) throws Throwable {
+        int maxAttempts = retryable.maxAttempts();
+        Class<? extends Throwable>[] retryOnExceptions = retryable.retryOnExceptions();
 
-        int maxAttempts = 3;
-        Throwable lastException = null;
+        int attempt = 1;
 
-        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+        while (true) {
             try {
-                log.info("[{}] {} tentativo:{}", sessionId, methodName, attempt);
-                Object result = joinPoint.proceed(); // Esegui il metodo originale
-                log.info("[{}] [SUCCESS] {} tentativo:{}", sessionId, methodName, attempt);
-                return result; // Restituisci il risultato se tutto va bene
-            } catch (Throwable ex) {
-                lastException = ex;
-                log.error("[{}] [ERROR] {} tentativo:{}, {}: {}", sessionId, methodName, attempt,
-                        ex.getClass().getSimpleName(), ex.getMessage());
-                if (attempt == maxAttempts) {
-                    log.error("[{}] [ERROR] {} Raggiunto il massimo numero di tentativi", sessionId, methodName);
-                    throw lastException; // Propaga l'ultima eccezione
+                return joinPoint.proceed();
+            } catch (Throwable e) {
+                if (attempt >= maxAttempts || !shouldRetryOnException(e, retryOnExceptions)) {
+                    log.error("[ERROR] Superato il numero massimo di tentativi ({}). Eccezione: {}, Messaggio: {}",
+                            maxAttempts, e.getClass().getSimpleName(), e.getMessage());
+                    throw e;
                 }
-            } finally {
-                long duration = System.currentTimeMillis() - startTime;
-                log.info("[{}] {} terminato in {}ms", sessionId, methodName, duration);
+
+                log.warn("[WARN] Tentativo {} fallito. Classe errore: {}, Messaggio: {}. Riprovo...",
+                        attempt, e.getClass().getSimpleName(), e.getMessage());
+                attempt++;
             }
         }
-        return null; // Questo non viene mai raggiunto grazie al throw
+    }
+
+    /**
+     * Metodo di utilità alla "handleRetry" che cerca l'Exception generata a runtime con la lista di exception per
+     * cui si deve fare il retry
+     *
+     * @param e Eccezione generata a runtime
+     * @param retryOnExceptions Lista di eccezioni per cui si effettua logica 'retry'
+     * @return Ritorna true se trova l'Exception nella lista
+     */
+    private boolean shouldRetryOnException(Throwable e, Class<? extends Throwable>[] retryOnExceptions) {
+        for (var exceptionClass : retryOnExceptions) {
+            if (exceptionClass.isAssignableFrom(e.getClass())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

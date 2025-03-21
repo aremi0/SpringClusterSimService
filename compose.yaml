@@ -32,19 +32,12 @@ services:
     volumes:
       - ./EurekaServer/target/EurekaServer-0.0.1-SNAPSHOT.war:/app.war
     working_dir: /app
-    command: ["java", "-Xms256m", "-Xmx512m", "-jar", "/app.war"]
-    deploy:
-      resources:
-        limits:
-          cpus: "3"
-          memory: "1024mb"
-        reservations:
-          cpus: "2"
-          memory: "512mb"
+    command: ["java", "-jar", "/app.war"]
     ports:
       - "8761:8761"
     networks:
       - clustersim
+
   redis:
     image: redis:latest
     container_name: redis
@@ -64,30 +57,32 @@ services:
     networks:
       - clustersim
 
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml # Configurazione Prometheus
-    ports:
-      - "9090:9090" # Porta per accedere all'interfaccia di Prometheus
-    networks:
-      - clustersim
-    depends_on:
-      - requestHandlerProxy # Assicura che il proxy sia attivo prima di Prometheus
+  #prometheus:
+  #  image: prom/prometheus:latest
+  #  container_name: prometheus
+  #  volumes:
+  #    - ./prometheus.yml:/etc/prometheus/prometheus.yml # Configurazione Prometheus
+  #  ports:
+  #    - "9090:9090" # Porta per accedere all'interfaccia di Prometheus
+  #  networks:
+  #    - clustersim
+  #  depends_on:
+  #    - requestHandlerProxy # Assicura che il proxy sia attivo prima di Prometheus
 
-  requestHandlerProxy:
-    image: eclipse-temurin:21-jre # Usa una base con Java 21
-    volumes:
-      - ./RequestHandlerProxy/target/RequestHandlerProxy-0.0.1-SNAPSHOT.war:/app.war
-    working_dir: /app
-    command: ["java", "-jar", "/app.war"]
-    networks:
-      - clustersim
-    ports:
-      - "8080:8080" # Mappa la porta interna 8080 del container alla porta 8080 dell'host
-    depends_on:
-      - eurekaServer
+  #grafana:
+  #  image: grafana/grafana:latest
+  #  container_name: grafana
+  #  ports:
+  #    - "3000:3000"
+  #  networks:
+  #    - clustersim
+  #  environment:
+  #    - GF_SECURITY_ADMIN_USER=admin
+  #    - GF_SECURITY_ADMIN_PASSWORD=admin
+  #  depends_on:
+  #    - prometheus
+  #  volumes:
+  #    - grafana-data:/var/lib/grafana
 
   apiGateway:
     image: eclipse-temurin:21-jre # Usa una base con Java 21
@@ -98,7 +93,7 @@ services:
     networks:
       - clustersim
     ports:
-      - "8081:8081" # Mappa la porta interna 8080 del container alla porta 8080 dell'host
+      - "8080:8080" # Mappa la porta interna 8080 del container alla porta 8080 dell'host
     depends_on:
       - eurekaServer
 
